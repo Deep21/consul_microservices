@@ -26,15 +26,19 @@ spec:
         app: static-server-v1
       annotations:
         'consul.hashicorp.com/connect-inject': 'true'
-        "consul.hashicorp.com/connect-service-upstreams": "static-server-v2:2234, orderdb:3306"
+        "consul.hashicorp.com/connect-service-upstreams": "static-server-v2:2234, order-db:3306"
 
     spec:
       containers:
         - name: static-server-v1
-          image: hashicorp/http-echo:latest
-          args:
-            - -text="hello world-v1"
-            - -listen=:8080
+          image: nginx:stable-alpine
           ports:
-            - containerPort: 8080
+            - containerPort: 80
               name: http
+          volumeMounts:
+              - name: nginx-index-file1
+                mountPath: /usr/share/nginx/html/
+      volumes:
+      - name: nginx-index-file1
+        configMap:
+          name: index-html-configmap1
